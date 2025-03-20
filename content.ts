@@ -29,6 +29,7 @@ const execute = (delay: number) => {
 
       if (!btnFollowings.length) {
         if (count === 1) {
+          alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
           throw "フォロー中のユーザーが存在しない";
         }
 
@@ -57,6 +58,7 @@ const execute = (delay: number) => {
       const btnFollower = Array.from(document.querySelectorAll("span[dir='auto']"))
       .filter(el => el.textContent.includes("フォロワー"))?.[0]?.parentElement?.parentElement;
       if (!btnFollower) {
+        alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
         throw "フォロワーボタンが見つからない";
       }
       btnFollower.click();
@@ -64,6 +66,7 @@ const execute = (delay: number) => {
       setTimeout(() => {
         const btnFollowed = document.querySelector('[aria-label="フォロー中"][role="button"]') as HTMLElement;
         if (!btnFollowed) {
+          alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
           throw "フォロー中ボタンが見つからない";
         }
         btnFollowed.click();
