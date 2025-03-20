@@ -1,0 +1,8 @@
+export const CHROME_MESSAGES = {
+  EXECUTE: 'EXECUTE',
+  ERROR: {
+    UNSUPPORTED_ORIGIN: 'UNSUPPORTED_ORIGIN',
+  },
+};
+
+export const DEFAULT_DELAY = 1000;
