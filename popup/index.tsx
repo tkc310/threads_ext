@@ -8,12 +8,12 @@ const IndexPopup: FC = () => {
 
   return (
       <Card
-        bg="#333"
+        bg="#2d2d2d"
         width="240px"
         color="#fff"
         textAlign="center"
       >
-        <Heading fontSize="14px" py="16px" sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.6)" }}>
+        <Heading fontSize="14px" py="16px" sx={{ borderBottom: "1px solid #f3f5f726" }}>
           <Flex width="100%" justifyContent="center" >
             <Box width="20px" height="20px" mr="8px"><Logo /></Box>
             <Box>Threads Unfollower</Box>
@@ -21,7 +21,7 @@ const IndexPopup: FC = () => {
         </Heading>
         <Box p="24px 16px">
           <Flex justifyContent="center" alignItems="center" mb="8px">
-            <Box fontSize="12px" mr="8px">
+            <Box fontSize="14px" mr="8px">
               実行速度
             </Box>
             <Box>
@@ -41,21 +41,24 @@ const IndexPopup: FC = () => {
                 }}
               />
             </Box>
-            <Box fontSize="12px" ml="8px">
+            <Box fontSize="14px" ml="8px">
               ms
             </Box>
           </Flex>
-          <Box mb="16px" color="#ccc">
-            800ms以上が推奨
+          <Box mb="16px" color="#ccc" fontSize="11px">
+            800ms以上推奨 (200mbps回線の目安)
           </Box>
-          <Button mb="8px" width="100%" bg="#0d9488" color="#fff" fontWeight="bold" onClick={() => handleUnfollow(delay)}>
+          <Button mb="8px" py="6px" width="100%" color="#fff" fontWeight="bold"
+            sx={{ border: "1px solid #f3f5f726", borderRadius: "10px" }}
+            onClick={() => handleUnfollow(delay)}
+          >
             フォローを全て外す
           </Button>
-          <Box color="#ccc">
+          <Box color="#ccc" fontSize="11px">
             実行前に画面をリロードして下さい
           </Box>
         </Box>
-        <Box sx={{ borderTop: "1px solid rgba(255, 255, 255, 0.6)" }}>
+        <Box sx={{ borderTop: "1px solid #f3f5f726" }}>
           <Button width="100%" py="10px" color="#fff" fontWeight="bold" onClick={handleClose}>
             閉じる
           </Button>
