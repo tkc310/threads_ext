@@ -7,75 +7,108 @@ const isSupported = (): boolean => {
   return PLASMO_PUBLIC_SUPPORTED_ORIGIN === origin;
 };
 
-const execute = (delay: number) => {
+const moveProfilePage = async () => {
+  const btnProfile = document.querySelector('[href="/activity"]')?.parentElement?.nextElementSibling?.firstChild as HTMLElement;
+  if (btnProfile) {
+    const current = btnProfile.getAttribute("aria-current");
+    if (current === "page") {
+      return;
+    }
+
+    // 1. グロナビのプロフィールリンクをクリック
+    btnProfile.click();
+  }
+};
+
+const openFollowModal = () => {
+  const btnFollower = Array.from(document.querySelectorAll("span[dir='auto']"))
+    .filter(el => el.textContent.includes("フォロワー"))
+    ?.[0]?.parentElement?.parentElement;
+  if (!btnFollower) {
+    alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
+    throw "フォローモーダルが表示できない";
+  }
+
+  // 2. フォロワーn人ボタンをクリック
+  btnFollower.click();
+};
+
+const switchFollowingTab = () => {
+  const btnFollowed = document.querySelector('[aria-label="フォロー中"][role="button"]') as HTMLElement;
+  if (!btnFollowed) {
+    alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
+    throw "フォロー中タブに切り替えられない";
+  }
+
+  // 3. フォロー中タブをクリック
+  btnFollowed.click();
+};
+
+const unfollow = async (delay: number, count: number = 1) => {
+  const btnFollowings = Array.from(document.querySelectorAll("div"))
+  .filter(el => (
+    el.textContent.includes("フォロー中") &&
+    el.getAttribute("role") === "button" &&
+    !el.getAttribute("aria-label")
+  ));
+
+  if (!btnFollowings.length) {
+    if (count === 1) {
+      alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
+      throw "フォロー解除できるユーザーが存在しない";
+    }
+
+    alert("処理が完了しました");
+    return;
+  }
+
+  // 4. (フォロー中の)先頭ユーザーのフォロー中ボタンをクリック
+  btnFollowings[0].click();
+  await new Promise(resolve => setTimeout(resolve, delay));
+
+  const btnUnfollow = Array.from(document.querySelectorAll("div"))
+  .filter(el => (
+    el.textContent.includes("フォローをやめる") &&
+    el.getAttribute("role") === "button" &&
+    !el.getAttribute("aria-label")
+  ))?.[0];
+
+  // 失敗しても全体が終了するまで続ける
+  // if (!btnUnfollow) {
+  //   throw "フォロー解除に失敗";
+  // }
+
+  // 5. フォローをやめるボタンをクリック
+  btnUnfollow.click();
+  await new Promise(resolve => setTimeout(resolve, delay));
+
+  // 6. 4-5の再帰
+  unfollow(delay, count + 1);
+};
+
+/**
+ * シーケンス
+ * 1. グロナビのプロフィールリンクをクリック -> プロフィールページに遷移
+ * 2. フォロワーn人ボタンをクリック -> フォロワー・フォロー中モーダル表示
+ * 3. フォロー中タブをクリック -> フォロー中一覧タブを表示
+ * 4. 先頭ユーザーのフォロー中ボタンをクリック -> フォロー解除モーダル表示
+ * 5. フォローをやめるボタンをクリック -> フォロー解除されて解除モーダル閉じる
+ * 6. 4に戻る (4~5の再帰処理)
+**/
+const execute = async (delay: number) => {
   console.log("execute", delay);
 
   try {
-    const btnProfile = document.querySelector('[href="/activity"]')?.parentElement?.nextElementSibling?.firstChild as HTMLElement;
-    if (btnProfile) {
-      const current = btnProfile.getAttribute("aria-current");
-      if (current !== "page") {
-        btnProfile.click();
-      }
-    }
+    moveProfilePage();
+    await new Promise(resolve => setTimeout(resolve, delay + 1000)) ;
 
-    const unfollow = (count: number = 1) => {
-      const btnFollowings = Array.from(document.querySelectorAll("div"))
-      .filter(el => (
-        el.textContent.includes("フォロー中") &&
-        el.getAttribute("role") === "button" &&
-        !el.getAttribute("aria-label")
-      ));
+    openFollowModal();
+    await new Promise(resolve => setTimeout(resolve, delay + 1000)) ;
 
-      if (!btnFollowings.length) {
-        if (count === 1) {
-          alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
-          throw "フォロー中のユーザーが存在しない";
-        }
+    switchFollowingTab();
+    await new Promise(resolve => setTimeout(resolve, delay + 2000)) ;
 
-        alert("処理が完了しました");
-        return;
-      }
-
-      btnFollowings[0].click();
-      setTimeout(() => {
-        const btnUnfollow = Array.from(document.querySelectorAll("div"))
-        .filter(el => (
-          el.textContent.includes("フォローをやめる") &&
-          el.getAttribute("role") === "button" &&
-          !el.getAttribute("aria-label")
-        ))?.[0];
-
-        btnUnfollow.click();
-
-        setTimeout(() => {
-          unfollow(count + 1);
-        }, delay);
-      }, delay);
-    };
-
-    setTimeout(() => {
-      const btnFollower = Array.from(document.querySelectorAll("span[dir='auto']"))
-      .filter(el => el.textContent.includes("フォロワー"))?.[0]?.parentElement?.parentElement;
-      if (!btnFollower) {
-        alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
-        throw "フォロワーボタンが見つからない";
-      }
-      btnFollower.click();
-
-      setTimeout(() => {
-        const btnFollowed = document.querySelector('[aria-label="フォロー中"][role="button"]') as HTMLElement;
-        if (!btnFollowed) {
-          alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
-          throw "フォロー中ボタンが見つからない";
-        }
-        btnFollowed.click();
-
-        setTimeout(() => {
-          unfollow();
-        }, delay + 2000);
-      }, delay + 1000);
-    }, delay + 1000)
+    unfollow(delay);
   } catch (error) {
     console.log(error);
     alert("エラーが発生しました。\n画面をリロードしてから再実行してください");
