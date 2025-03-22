@@ -27,7 +27,7 @@
   },
   "manifest": {
     "host_permissions": [
-      "$SUPPORTED_URL"
+      "$PLASMO_PUBLIC_SUPPORTED_URL"
     ]
   }
 }

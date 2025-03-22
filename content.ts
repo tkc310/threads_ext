@@ -1,11 +1,5 @@
 import { CHROME_MESSAGES } from "~constants";
-
-const isSupported = (): boolean => {
-  const { PLASMO_PUBLIC_SUPPORTED_ORIGIN } = process.env;
-  const origin = location.origin;
-
-  return PLASMO_PUBLIC_SUPPORTED_ORIGIN === origin;
-};
+import { isSupported } from "~util";
 
 const moveProfilePage = async () => {
   const btnProfile = document.querySelector('[href="/activity"]')?.parentElement?.nextElementSibling?.firstChild as HTMLElement;
@@ -116,9 +110,11 @@ const execute = async (delay: number) => {
 };
 
 const initialize = () => {
-  console.log("initialize");
-
   const supported = isSupported();
+  if (!supported) {
+    return;
+  }
+  console.log("initialize");
 
   // popup.tsxからイベントを発行
   chrome.runtime.onMessage.addListener(
